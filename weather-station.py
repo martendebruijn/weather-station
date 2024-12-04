@@ -23,12 +23,24 @@ def get_weather_data():
         data = response.json()
 
         if data["cod"] == 200:
-            weather_info = {"city": city, "temperature": data["main"]["temp"]}
+            weather_info = {"city": city,
+            "temperature": {
+                "actual": data["main"]["temp"],
+                "feels_like": data["main"]["feels_like"],
+                "min": data["main"]["temp_min"],
+                "max": data["main"]["temp_max"],
+            },
+            "wind": data["wind"]["speed"],
+            "weather": {
+                "main": data["weather"][0]['main'],
+                "description": data["weather"][0]['description']
+                },
+            "last_updated": time.time()
+            }
 
             with open(output_file, "w") as file:
                 json.dump(weather_info, file, indent=4)
                 file.write("\n")
-
             print(f"Saved weather: {weather_info}")
         else:
             print("Error with fetching weather data")
