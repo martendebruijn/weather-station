@@ -23,7 +23,6 @@ function loadWeatherData() {
 
       const { weather, temperature, wind, last_updated } = data
 
-
       weatherEl.innerHTML = `
       <h2>City: ${data.city}</h2>
       <dl>
@@ -44,3 +43,90 @@ function loadWeatherData() {
 }
 
 loadWeatherData();
+
+
+async function loadData() {
+  const jsonFile = "weather_data.json";
+
+  try {
+    const response = await fetch(jsonFile);
+
+    if (!response.ok)
+      throw new Error("Something went wrong with loading the JSON file.");
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
+function getRootElement(id) {
+  const rootEl = document.getElementById(id);
+  if (rootEl === null)
+    throw new Error(`An element with the id of "${id}" doesn't exists.`);
+}
+
+function createEl(tagName) {
+  return () => document.createElement(tagName);
+}
+
+function createTextNode(content) {
+  return document.createTextNode(content)
+}
+
+function addTo(parentEl) {
+  return (child) => parentEl.appendChild(child)
+}
+
+const root = getRootElement('weather');
+
+const createHeaderLevel2Element = createEl('h2');
+const createDescriptionListElement = createEl('dl');
+const createDescriptionListTermElement = createEl('dt');
+const createDescriptionListDescriptionElement = createEl('dd');
+
+function createHeader(title) {
+  addTo(createHeaderLevel2Element())(createTextNode(title))
+}
+
+createHeader('City: Turnhout')
+
+const addToRoot = addTo(root);
+addToRoot(headerEl);
+
+const dlEl = createDescriptionListElement();
+const addToDl = addTo(dlEl);
+
+function createDescriptionListItemTerm(term) {
+  return addTo(createDescriptionListTermElement())(createTextNode(term));
+}
+
+function createDescriptionListItemDescription(description) {
+  return addTo(createDescriptionListDescriptionElement())(createTextNode(description));
+}
+
+addToDl(createDescriptionListItemTerm('Temperature:'));
+addToDl(createDescriptionListItemDescription('20 C'));
+
+addToRoot(dlEl);
+
+function createDescriptionListItem(term, description) {
+  const dt = createDescriptionListItemTerm(term);
+  const dd = createDescriptionListItemDescription(description);
+  return [dt, dd]
+}
+
+function createDescriptionList() {
+  const addToDl = createDescriptionListElement();
+
+  addToDl(createDescriptionListItemTerm('Temperature'));
+  addToDl(createDescriptionListItemDescription('20 C'));
+}
+
+
+
+
+
+
